@@ -351,7 +351,7 @@ export default function AdminPage() {
                   ) : (
                     <>
                       <UploadCloud className="w-5 h-5" />
-                      อัปโหลดและแยกไฟล์
+                      อัพโหลดไฟล์
                     </>
                   )}
                 </button>

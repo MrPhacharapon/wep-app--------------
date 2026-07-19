@@ -263,7 +263,7 @@ export default function Home() {
             <h2 className="text-xl font-semibold mb-4 text-slate-700">ผลการค้นหา ({results.length} รายการ)</h2>
             {results.length > 0 ? (
               results.map((result, idx) => (
-                <div key={idx} className="glass-panel p-4 flex items-center justify-between hover:bg-white/60 transition-colors cursor-pointer group">
+                <div key={idx} className="glass-panel p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 hover:bg-white/60 transition-colors cursor-pointer group">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
                       <FileText className="w-5 h-5" />
@@ -275,7 +275,7 @@ export default function Home() {
                   </div>
                   <button 
                     onClick={() => handleDownload(result.pdf_base64, result.month, result.year)}
-                    className="flex items-center gap-2 text-sm font-medium bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl transition-colors border border-emerald-200"
+                    className="flex items-center justify-center w-full sm:w-auto gap-2 text-sm font-medium bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl transition-colors border border-emerald-200"
                   >
                     <Download className="w-4 h-4" />
                     ดาวน์โหลด

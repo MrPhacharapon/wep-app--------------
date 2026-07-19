@@ -216,14 +216,14 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto z-10 relative space-y-8">
         
         {/* Header */}
-        <div className="flex items-center justify-between glass-panel p-6 bg-white/70">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 glass-panel p-6 bg-white/70">
           <div>
             <h1 className="text-2xl font-bold text-slate-800">ระบบจัดการสลิปเงินเดือน</h1>
             <p className="text-slate-500 text-sm mt-1">อัปโหลดไฟล์ PDF รวม และตั้งค่าฐานข้อมูล</p>
           </div>
           <button 
             onClick={handleLogout}
-            className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 bg-white/80 hover:bg-white rounded-lg transition-colors border border-slate-200 shadow-sm"
+            className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-slate-600 hover:text-rose-600 bg-white/80 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200 shadow-sm"
           >
             ออกจากระบบ
           </button>
@@ -370,7 +370,7 @@ export default function AdminPage() {
               </div>
 
               {historyItems.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+                <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-center">
                   <FileText className="w-12 h-12 mb-3 text-slate-200" />
                   <p>ยังไม่มีประวัติการอัปโหลด</p>
                 </div>
@@ -383,37 +383,37 @@ export default function AdminPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group"
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group"
                       >
-                        <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0 hidden sm:flex">
                           <FileText className="w-5 h-5" />
                         </div>
                         
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 w-full">
                           <h3 className="font-medium text-slate-800 truncate">
                             สลิปเดือน {item.month} {item.year}
                           </h3>
-                          <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-slate-500 mt-1">
                             <span>อัปโหลดเมื่อ: {new Date(item.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                            <span className="w-1 h-1 rounded-full bg-slate-300" />
+                            <span className="w-1 h-1 rounded-full bg-slate-300 hidden sm:block" />
                             <span className="truncate">{item.file_name}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0">
                           <button 
                             onClick={() => handleViewFile(item.storage_path)}
-                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors"
+                            className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 rounded-xl transition-colors"
                             title="ดูไฟล์"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-4 h-4 sm:mr-0" />
                           </button>
                           <button 
                             onClick={() => handleDelete(item.id, item.storage_path, item.month, item.year)}
-                            className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
+                            className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-xl transition-colors"
                             title="ลบข้อมูล"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4 sm:mr-0" />
                           </button>
                         </div>
                       </motion.div>

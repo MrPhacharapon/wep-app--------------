@@ -129,11 +129,11 @@ export default function AdminPage() {
         await new Promise(resolve => setTimeout(resolve, 50));
       }
 
-      // 4. Upload the combined 8MB PDF to Supabase Storage
-      const fileName = `slip_${selectedMonth}_${selectedYear}_${Date.now()}.pdf`;
+      // 4. Upload the combined 8MB PDF to Supabase Storage (Using safe filename without Thai characters)
+      const safeFileName = `slip_backup_${Date.now()}.pdf`;
       const { error: storageError } = await supabase.storage
         .from('slips')
-        .upload(fileName, file);
+        .upload(safeFileName, file);
 
       if (storageError) {
         console.error("Storage error:", storageError);
@@ -145,7 +145,7 @@ export default function AdminPage() {
         month: selectedMonth,
         year: selectedYear,
         file_name: file.name,
-        storage_path: fileName
+        storage_path: safeFileName
       });
 
       if (historyError) {

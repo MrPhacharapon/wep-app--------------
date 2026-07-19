@@ -172,12 +172,7 @@ export default function Home() {
         </button>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-xl z-10"
-      >
+      <div className="w-full max-w-xl z-10">
         <div className="text-center mb-10 flex flex-col items-center">
           <img 
             src="https://i.postimg.cc/8kKrvnfY/removebg-preview.png" 
@@ -259,7 +254,7 @@ export default function Home() {
         </div>
 
         {results && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4">
+          <div className="space-y-4">
             <h2 className="text-xl font-semibold mb-4 text-slate-700">ผลการค้นหา ({results.length} รายการ)</h2>
             {results.length > 0 ? (
               results.map((result, idx) => (
@@ -289,9 +284,9 @@ export default function Home() {
                 <p className="text-sm mt-2">โปรดตรวจสอบเลขบัญชีธนาคารอีกครั้ง</p>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Admin Password Modal */}
       <AnimatePresence>

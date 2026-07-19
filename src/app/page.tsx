@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Download, FileText, AlertCircle, Settings, X } from "lucide-react";
+import { Search, Download, FileText, AlertCircle, Settings, X, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { supabase } from '@/lib/supabase';

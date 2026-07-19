@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Lock, UploadCloud, Settings, FileText, CheckCircle2, History, Trash2, GripVertical, Eye } from "lucide-react";
 import { motion, Reorder, AnimatePresence } from "framer-motion";
 import { PDFDocument } from 'pdf-lib';
-import Papa from 'papaparse';
 import { supabase } from '@/lib/supabase';
 
 const MONTHS = [

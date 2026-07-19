@@ -137,7 +137,7 @@ export default function AdminPage() {
 
       if (storageError) {
         console.error("Storage error:", storageError);
-        alert("คำเตือน: หั่นไฟล์สำเร็จ แต่ไม่สามารถบันทึกไฟล์ 8MB ลง Storage ได้ (อาจลืมสร้าง Bucket หรือลืมติ๊ก Public)");
+        alert("คำเตือน: อัปโหลดสลิปสำเร็จ แต่ไม่สามารถสำรองไฟล์ต้นฉบับก้อนใหญ่ลง Storage ได้ (อาจตั้งค่า Policy ไม่ถูกต้อง)");
       }
 
       // 5. Save History

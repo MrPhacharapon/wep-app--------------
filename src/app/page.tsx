@@ -36,26 +36,40 @@ export default function Home() {
   }, []);
 
   const fetchAvailablePeriods = async () => {
-    const { data } = await supabase.from('upload_history').select('month, year');
-    if (data && data.length > 0) {
-      // Get unique months and years
-      const uniqueMonths = Array.from(new Set(data.map(d => d.month)));
-      const uniqueYears = Array.from(new Set(data.map(d => d.year))).sort((a, b) => Number(b) - Number(a));
+    try {
+      const { data, error } = await supabase.from('upload_history').select('month, year');
       
-      // Sort months according to ALL_MONTHS order
-      uniqueMonths.sort((a, b) => ALL_MONTHS.indexOf(a) - ALL_MONTHS.indexOf(b));
+      if (error) {
+        console.error("Supabase fetch error:", error);
+        alert(`เกิดข้อผิดพลาดในการโหลดเดือน: ${error.message}`);
+        return;
+      }
 
-      setAvailableMonths(uniqueMonths);
-      setAvailableYears(uniqueYears);
-      
-      if (uniqueMonths.length > 0) {
-        setFromMonth(uniqueMonths[0]);
-        setToMonth(uniqueMonths[uniqueMonths.length - 1]);
+      if (data && data.length > 0) {
+        // Get unique months and years
+        const uniqueMonths = Array.from(new Set(data.map(d => d.month)));
+        const uniqueYears = Array.from(new Set(data.map(d => d.year))).sort((a, b) => Number(b) - Number(a));
+        
+        // Sort months according to ALL_MONTHS order
+        uniqueMonths.sort((a, b) => ALL_MONTHS.indexOf(a) - ALL_MONTHS.indexOf(b));
+
+        setAvailableMonths(uniqueMonths);
+        setAvailableYears(uniqueYears);
+        
+        if (uniqueMonths.length > 0) {
+          setFromMonth(uniqueMonths[0]);
+          setToMonth(uniqueMonths[uniqueMonths.length - 1]);
+        }
+        if (uniqueYears.length > 0) {
+          setFromYear(uniqueYears[0]);
+          setToYear(uniqueYears[0]);
+        }
+      } else {
+        // Data is empty
+        console.log("No upload history found.");
       }
-      if (uniqueYears.length > 0) {
-        setFromYear(uniqueYears[0]);
-        setToYear(uniqueYears[0]);
-      }
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
     }
   };
 

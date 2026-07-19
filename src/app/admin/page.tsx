@@ -108,7 +108,7 @@ export default function AdminPage() {
         if (!row) break;
         
         const name = row[0];
-        const bankAccount = String(row[1]).trim();
+        const bankAccount = String(row[2]).trim();
         if (!bankAccount) continue;
         
         const newPdf = await PDFDocument.create();

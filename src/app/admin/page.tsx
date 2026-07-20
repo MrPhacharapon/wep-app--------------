@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, UploadCloud, Settings, FileText, CheckCircle2, History, Trash2, GripVertical, Eye } from "lucide-react";
 import { PDFDocument } from 'pdf-lib';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 // @ts-ignore
 import Papa from 'papaparse';
 import { supabase } from '@/lib/supabase';
@@ -33,10 +34,12 @@ export default function AdminPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
+    setIsMounted(true);
     const auth = sessionStorage.getItem("adminAuth");
     if (auth === "true") {
       setIsAuthenticated(true);
@@ -55,6 +58,29 @@ export default function AdminPage() {
     if (data && !error) {
       setHistoryItems(data);
     }
+  };
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+    
+    const startIndex = result.source.index;
+    const endIndex = result.destination.index;
+    
+    if (startIndex === endIndex) return;
+
+    // 1. Update UI locally immediately
+    const newItems = Array.from(historyItems);
+    const [removed] = newItems.splice(startIndex, 1);
+    newItems.splice(endIndex, 0, removed);
+    setHistoryItems(newItems);
+
+    // 2. Update Supabase to permanently save the new order
+    // By resetting created_at, we maintain the "ORDER BY created_at DESC" sorting
+    const now = Date.now();
+    Promise.all(newItems.map((item, i) => {
+      const newTime = new Date(now - i * 1000).toISOString();
+      return supabase.from('upload_history').update({ created_at: newTime }).match({ id: item.id });
+    })).catch(err => console.error("Reorder DB error:", err));
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -366,48 +392,71 @@ export default function AdminPage() {
                   <FileText className="w-12 h-12 mb-3 text-slate-200" />
                   <p>ยังไม่มีประวัติการอัปโหลด</p>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {historyItems.map((item) => (
-                    <div 
-                      key={item.id} 
-                      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0 hidden sm:flex">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      
-                      <div className="flex-1 min-w-0 w-full">
-                        <h3 className="font-medium text-slate-800 truncate">
-                          สลิปเดือน {item.month} {item.year}
-                        </h3>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-slate-500 mt-1">
-                          <span>อัปโหลดเมื่อ: {new Date(item.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                          <span className="w-1 h-1 rounded-full bg-slate-300 hidden sm:block" />
-                          <span className="truncate">{item.file_name}</span>
-                        </div>
-                      </div>
+              ) : isMounted ? (
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="history-list">
+                    {(provided) => (
+                      <div 
+                        className="space-y-3" 
+                        {...provided.droppableProps} 
+                        ref={provided.innerRef}
+                      >
+                        {historyItems.map((item, index) => (
+                          <Draggable key={item.id} draggableId={item.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div 
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border ${
+                                  snapshot.isDragging 
+                                    ? 'border-emerald-400 shadow-xl scale-[1.02] z-50 relative' 
+                                    : 'border-slate-100 shadow-sm hover:shadow-md'
+                                } transition-all group`}
+                              >
+                                <div 
+                                  {...provided.dragHandleProps}
+                                  className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 cursor-grab active:cursor-grabbing hover:text-emerald-500 hover:bg-emerald-50 transition-colors shrink-0"
+                                >
+                                  <GripVertical className="w-5 h-5" />
+                                </div>
+                                
+                                <div className="flex-1 min-w-0 w-full">
+                                  <h3 className="font-medium text-slate-800 truncate">
+                                    สลิปเดือน {item.month} {item.year}
+                                  </h3>
+                                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-slate-500 mt-1">
+                                    <span>อัปโหลดเมื่อ: {new Date(item.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                    <span className="w-1 h-1 rounded-full bg-slate-300 hidden sm:block" />
+                                    <span className="truncate">{item.file_name}</span>
+                                  </div>
+                                </div>
 
-                      <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0">
-                        <button 
-                          onClick={() => handleViewFile(item.storage_path)}
-                          className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 rounded-xl transition-colors"
-                          title="ดูไฟล์"
-                        >
-                          <Eye className="w-4 h-4 sm:mr-0" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(item.id, item.storage_path, item.month, item.year)}
-                          className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-xl transition-colors"
-                          title="ลบข้อมูล"
-                        >
-                          <Trash2 className="w-4 h-4 sm:mr-0" />
-                        </button>
+                                <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+                                  <button 
+                                    onClick={() => handleViewFile(item.storage_path)}
+                                    className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 rounded-xl transition-colors"
+                                    title="ดูไฟล์"
+                                  >
+                                    <Eye className="w-4 h-4 sm:mr-0" />
+                                  </button>
+                                  <button 
+                                    onClick={() => handleDelete(item.id, item.storage_path, item.month, item.year)}
+                                    className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-xl transition-colors"
+                                    title="ลบข้อมูล"
+                                  >
+                                    <Trash2 className="w-4 h-4 sm:mr-0" />
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              ) : null}
             </div>
           </div>
 

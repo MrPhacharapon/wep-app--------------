@@ -333,7 +333,7 @@ export default function AdminPage() {
                 <button 
                   type="submit" 
                   disabled={isUploading || !file}
-                  className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 shadow-emerald-500/20"
+                  className="btn-primary w-full flex items-center justify-center gap-2 shadow-emerald-500/20"
                 >
                   {isUploading ? (
                     <>

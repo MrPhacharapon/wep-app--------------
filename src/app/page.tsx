@@ -259,7 +259,7 @@ export default function Home() {
               </div>
             </div>
 
-            <button type="submit" disabled={isLoading || availableMonths.length === 0} className="btn-primary w-full flex items-center justify-center gap-2 mt-8 disabled:opacity-50">
+            <button type="submit" disabled={isLoading || availableMonths.length === 0} className="btn-primary w-full flex items-center justify-center gap-2 mt-8">
               {isLoading ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Search className="w-5 h-5" />}
               {isLoading ? 'กำลังค้นหา...' : 'ค้นหาสลิปเงินเดือน'}
             </button>

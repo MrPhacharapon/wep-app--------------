@@ -22,7 +22,7 @@
     @apply bg-white/50 border border-emerald-100 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-all placeholder:text-slate-400 shadow-sm;
   }
   .btn-primary {
-    @apply bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-medium rounded-xl px-6 py-3 hover:from-emerald-500 hover:to-teal-500 transition-all shadow-lg shadow-emerald-500/30 active:scale-[0.98];
+    @apply bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-medium rounded-xl px-6 py-3 hover:from-emerald-500 hover:to-teal-500 transition-all shadow-lg shadow-emerald-500/30 active:scale-[0.98] disabled:from-slate-400 disabled:to-slate-500 disabled:text-white disabled:shadow-none disabled:active:scale-100 disabled:opacity-100 disabled:cursor-not-allowed;
   }
 }
 

@@ -170,24 +170,24 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-start p-6 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-400/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-300/20 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Admin Entry Button */}
-      <div className="absolute top-6 right-6 z-20">
+      <div className="w-full max-w-xl z-20 flex justify-end mb-4 relative mt-2 md:mt-6">
         <button 
           onClick={() => setShowAdminModal(true)}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-700 bg-white/60 hover:bg-white rounded-xl transition-all border border-slate-200/50 backdrop-blur-sm shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-700 bg-white/60 hover:bg-white rounded-xl transition-all border border-slate-200/50 backdrop-blur-sm shadow-sm relative z-30 cursor-pointer"
         >
           <Settings className="w-4 h-4" />
           สำหรับผู้ดูแลระบบ
         </button>
       </div>
 
-      <div className="w-full max-w-xl z-10">
-        <div className="text-center mb-10 flex flex-col items-center">
+      <div className="w-full max-w-xl z-10 flex flex-col items-center flex-1">
+        <div className="text-center mb-10 flex flex-col items-center w-full mt-2">
           <img 
             src="https://i.postimg.cc/8kKrvnfY/removebg-preview.png" 
             alt="โลโก้ศูนย์การศึกษาพิเศษ ประจำจังหวัดลำปาง" 

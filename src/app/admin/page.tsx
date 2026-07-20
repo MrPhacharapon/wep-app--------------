@@ -394,7 +394,36 @@ export default function AdminPage() {
                 </div>
               ) : isMounted ? (
                 <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="history-list">
+                  <Droppable 
+                    droppableId="history-list"
+                    renderClone={(provided, snapshot, rubric) => {
+                      const item = historyItems[rubric.source.index];
+                      return (
+                        <div
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}
+                          style={provided.draggableProps.style}
+                          className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-emerald-400 shadow-xl scale-[1.02] z-[9999]"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-emerald-500 shrink-0">
+                            <GripVertical className="w-5 h-5" />
+                          </div>
+                          
+                          <div className="flex-1 min-w-0 w-full">
+                            <h3 className="font-medium text-slate-800 truncate">
+                              สลิปเดือน {item.month} {item.year}
+                            </h3>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-slate-500 mt-1">
+                              <span>อัปโหลดเมื่อ: {new Date(item.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                              <span className="w-1 h-1 rounded-full bg-slate-300 hidden sm:block" />
+                              <span className="truncate">{item.file_name}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  >
                     {(provided) => (
                       <div 
                         className="space-y-3" 

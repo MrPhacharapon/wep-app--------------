@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Download, FileText, AlertCircle, Settings, X, Lock } from "lucide-react";
+import { Search, Download, FileText, AlertCircle, Settings, X, Lock, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 // @ts-ignore
 import Papa from "papaparse";
@@ -18,6 +18,7 @@ export default function Home() {
   const [bankAccount, setBankAccount] = useState("");
   const [availableMonths, setAvailableMonths] = useState<string[]>([]);
   const [availableYears, setAvailableYears] = useState<string[]>([]);
+  const [showBankAccount, setShowBankAccount] = useState(false);
   
   const [fromMonth, setFromMonth] = useState("");
   const [fromYear, setFromYear] = useState("");
@@ -250,14 +251,32 @@ export default function Home() {
           <form onSubmit={handleSearch} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">เลขบัญชีธนาคาร</label>
-              <input
-                type="text"
-                required
-                placeholder="กรอกเลขบัญชี (ไม่ต้องมีขีด)"
-                className="glass-input w-full bg-white/70"
-                value={bankAccount}
-                onChange={(e) => setBankAccount(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  type={showBankAccount ? "text" : "password"}
+                  required
+                  autoComplete="off"
+                  placeholder="กรอกเลขบัญชี (ไม่ต้องมีขีด)"
+                  className="glass-input w-full bg-white/70 pr-24 font-mono"
+                  value={bankAccount}
+                  onChange={(e) => setBankAccount(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowBankAccount(!showBankAccount)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-emerald-600 transition-colors"
+                >
+                  {showBankAccount ? (
+                    <>
+                      <EyeOff className="w-4 h-4" /> ซ่อน
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-4 h-4" /> แสดง
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

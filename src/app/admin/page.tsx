@@ -407,6 +407,7 @@ export default function AdminPage() {
                               <div 
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
+                                style={provided.draggableProps.style}
                                 className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border ${
                                   snapshot.isDragging 
                                     ? 'border-emerald-400 shadow-xl scale-[1.02] z-50 relative' 

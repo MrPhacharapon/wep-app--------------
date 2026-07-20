@@ -347,8 +347,10 @@ export default function Home() {
             ) : (
               <div className="glass-panel p-8 text-center text-slate-500 flex flex-col items-center">
                 <AlertCircle className="w-12 h-12 mb-4 text-slate-400" />
-                <p>ไม่พบข้อมูลสลิปเงินเดือนในช่วงเวลาที่เลือก</p>
-                <p className="text-sm mt-2">โปรดตรวจสอบเลขบัญชีธนาคารอีกครั้ง</p>
+                <p className="text-sm sm:text-base text-slate-500 max-w-md mx-auto leading-relaxed">
+                  ไม่พบข้อมูลสลิปเงินเดือนในช่วงเวลาที่เลือก<br/>
+                  <span className="text-xs sm:text-sm mt-1 inline-block">โปรดตรวจสอบเลขบัญชีธนาคารอีกครั้ง หรือคุณอาจไม่มีประวัติรับเงินเดือนในเดือนดังกล่าว</span>
+                </p>
               </div>
             )}
           </div>

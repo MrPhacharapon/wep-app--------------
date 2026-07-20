@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, UploadCloud, Settings, FileText, CheckCircle2, History, Trash2, GripVertical, Eye } from "lucide-react";
-import { motion, Reorder, AnimatePresence } from "framer-motion";
 import { PDFDocument } from 'pdf-lib';
 // @ts-ignore
 import Papa from 'papaparse';
@@ -319,24 +318,17 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <AnimatePresence>
-                  {uploadSuccess && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 mt-4">
-                        <CheckCircle2 className="w-5 h-5 shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">อัปโหลดสำเร็จ!</p>
-                          <p className="text-xs opacity-80 mt-0.5">ระบบแยกไฟล์และผูกเลขบัญชีเรียบร้อยแล้ว</p>
-                        </div>
+                {uploadSuccess && (
+                  <div className="overflow-hidden">
+                    <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 mt-4">
+                      <CheckCircle2 className="w-5 h-5 shrink-0" />
+                      <div>
+                        <p className="font-medium text-sm">อัปโหลดสำเร็จ!</p>
+                        <p className="text-xs opacity-80 mt-0.5">ระบบแยกไฟล์และผูกเลขบัญชีเรียบร้อยแล้ว</p>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    </div>
+                  </div>
+                )}
 
                 <button 
                   type="submit" 
@@ -376,49 +368,44 @@ export default function AdminPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <AnimatePresence>
-                    {historyItems.map((item) => (
-                      <motion.div 
-                        key={item.id} 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0 hidden sm:flex">
-                          <FileText className="w-5 h-5" />
+                  {historyItems.map((item) => (
+                    <div 
+                      key={item.id} 
+                      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0 hidden sm:flex">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0 w-full">
+                        <h3 className="font-medium text-slate-800 truncate">
+                          สลิปเดือน {item.month} {item.year}
+                        </h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-slate-500 mt-1">
+                          <span>อัปโหลดเมื่อ: {new Date(item.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          <span className="w-1 h-1 rounded-full bg-slate-300 hidden sm:block" />
+                          <span className="truncate">{item.file_name}</span>
                         </div>
-                        
-                        <div className="flex-1 min-w-0 w-full">
-                          <h3 className="font-medium text-slate-800 truncate">
-                            สลิปเดือน {item.month} {item.year}
-                          </h3>
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-slate-500 mt-1">
-                            <span>อัปโหลดเมื่อ: {new Date(item.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                            <span className="w-1 h-1 rounded-full bg-slate-300 hidden sm:block" />
-                            <span className="truncate">{item.file_name}</span>
-                          </div>
-                        </div>
+                      </div>
 
-                        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0">
-                          <button 
-                            onClick={() => handleViewFile(item.storage_path)}
-                            className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 rounded-xl transition-colors"
-                            title="ดูไฟล์"
-                          >
-                            <Eye className="w-4 h-4 sm:mr-0" />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(item.id, item.storage_path, item.month, item.year)}
-                            className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-xl transition-colors"
-                            title="ลบข้อมูล"
-                          >
-                            <Trash2 className="w-4 h-4 sm:mr-0" />
-                          </button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                      <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+                        <button 
+                          onClick={() => handleViewFile(item.storage_path)}
+                          className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 rounded-xl transition-colors"
+                          title="ดูไฟล์"
+                        >
+                          <Eye className="w-4 h-4 sm:mr-0" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(item.id, item.storage_path, item.month, item.year)}
+                          className="flex-1 sm:flex-none flex items-center justify-center p-2 text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-xl transition-colors"
+                          title="ลบข้อมูล"
+                        >
+                          <Trash2 className="w-4 h-4 sm:mr-0" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

@@ -165,7 +165,7 @@ export default function AdminPage() {
             if (match && match[0]) {
               const extractedAccount = match[0];
               // Search in accounts array (Column index 2 is Bank Account)
-              const found = accounts.find(r => r[2] && String(r[2]).trim() === extractedAccount);
+              const found = accounts.find((r: string[]) => r[2] && String(r[2]).trim() === extractedAccount);
               if (found) {
                 matchedRow = found;
                 extractionMethod = "OCR-Match";

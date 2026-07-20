@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { Search, Download, FileText, AlertCircle, Settings, X, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { supabase } from '@/lib/supabase';
+// @ts-ignore
+import Papa from "papaparse";
+import { supabase } from "@/lib/supabase";
 
 const ALL_MONTHS = [
   "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
@@ -23,7 +25,8 @@ export default function Home() {
   const [toYear, setToYear] = useState("");
   
   const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<{ month: string; year: string; pdf_base64: string }[] | null>(null);
+  const [results, setResults] = useState<any[] | null>(null);
+  const [employeeData, setEmployeeData] = useState<{name: string, position: string} | null>(null);
 
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
@@ -112,6 +115,31 @@ export default function Home() {
       });
       
       setResults(filteredData);
+      setEmployeeData(null);
+
+      // Fetch employee info from Google Sheets
+      try {
+        const sheetUrl = "https://docs.google.com/spreadsheets/d/1warnAj4x4d7lZecJ3vApaGltSxx1Ji_wv2CkOhcF0nI/export?format=csv&gid=0";
+        const res = await fetch(sheetUrl);
+        const csvText = await res.text();
+        
+        Papa.parse(csvText, {
+          complete: (parsed: any) => {
+            const rows = parsed.data;
+            // Find row where Col 2 (index 2) == bankAccount
+            const matchedRow = rows.find((row: any) => row[2] && row[2].toString().trim() === bankAccount.trim());
+            if (matchedRow) {
+              setEmployeeData({
+                name: matchedRow[0],
+                position: matchedRow[1]
+              });
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Failed to fetch sheet", err);
+      }
+
     } catch (error) {
       console.error("Search error:", error);
       alert("เกิดข้อผิดพลาดในการค้นหา");
@@ -261,13 +289,24 @@ export default function Home() {
 
             <button type="submit" disabled={isLoading || availableMonths.length === 0} className="btn-primary w-full flex items-center justify-center gap-2 mt-8">
               {isLoading ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Search className="w-5 h-5" />}
-              {isLoading ? 'กำลังค้นหา...' : 'ค้นหาสลิปเงินเดือน'}
+              {isLoading ? 'กำลังค้นหา...' : 'ค้นหาใบรับรองการจ่ายเงินเดือน'}
             </button>
           </form>
         </div>
 
         {results && (
           <div className="space-y-4">
+            {employeeData && (
+              <div className="mb-4 text-center w-full">
+                <div className="inline-flex flex-col sm:flex-row items-center gap-1 sm:gap-2 px-6 py-3 bg-emerald-50/80 border border-emerald-100 rounded-2xl shadow-sm backdrop-blur-sm">
+                  <span className="text-emerald-800 font-medium whitespace-nowrap">ใบรับรองการจ่ายเงินเดือนของ</span>
+                  <span className="text-emerald-900 font-bold whitespace-nowrap">{employeeData.name}</span>
+                  <span className="text-emerald-800 font-medium whitespace-nowrap hidden sm:inline">ตำแหน่ง</span>
+                  <span className="text-emerald-900 font-bold whitespace-nowrap sm:hidden">ตำแหน่ง {employeeData.position}</span>
+                  <span className="text-emerald-900 font-bold whitespace-nowrap hidden sm:inline">{employeeData.position}</span>
+                </div>
+              </div>
+            )}
             <h2 className="text-xl font-semibold mb-4 text-slate-700">ผลการค้นหา ({results.length} รายการ)</h2>
             {results.length > 0 ? (
               results.map((result, idx) => (
@@ -277,7 +316,7 @@ export default function Home() {
                       <FileText className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="font-medium text-slate-800">สลิปเงินเดือน {result.month}</p>
+                      <p className="font-medium text-slate-800">ใบรับรองการจ่ายเงินเดือน ประจำเดือน {result.month}</p>
                       <p className="text-sm text-slate-500">พ.ศ. {result.year}</p>
                     </div>
                   </div>

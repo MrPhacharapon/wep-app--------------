@@ -39,13 +39,13 @@ export default function AdminPage() {
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
-    setIsMounted(true);
     const auth = sessionStorage.getItem("adminAuth");
-    if (auth === "true") {
+    if (auth !== "true") {
+      router.push("/");
+    } else {
+      setIsMounted(true);
       setIsAuthenticated(true);
       fetchHistory();
-    } else {
-      router.push("/");
     }
   }, [router]);
 
@@ -111,9 +111,9 @@ export default function AdminPage() {
       const parsed = Papa.parse<string[]>(csvText, { skipEmptyLines: true });
       const accounts = parsed.data;
       
-      // 2. Read PDF
+      // 2. Read PDF for splitting (pdf-lib)
       const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pdfDoc = await PDFDocument.load(arrayBuffer.slice(0));
       const pages = pdfDoc.getPages();
       
       if (pages.length === 0) {
@@ -121,19 +121,72 @@ export default function AdminPage() {
         setIsUploading(false);
         return;
       }
+
+      // 3. Read PDF for text extraction (pdfjs-dist)
+      let pdfjsDoc: any = null;
+      let pdfjsLib: any = null;
+      try {
+        // Dynamically import pdfjs-dist to avoid SSR crash (DOMMatrix is not defined in Node)
+        pdfjsLib = await import('pdfjs-dist');
+        if (pdfjsLib?.version) {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+        }
+        pdfjsDoc = await pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
+      } catch (err) {
+        console.warn("Could not parse PDF for text extraction. Falling back to sequential mode.", err);
+      }
       
-      // 3. Match PDF pages to accounts and save to Supabase
+      // 4. Match PDF pages to accounts and save to Supabase
       let startIndex = 0;
-      if (accounts.length > 0 && accounts[0].length > 1 && String(accounts[0][1]).includes('บัญชี')) {
-        startIndex = 1;
+      if (accounts.length > 0) {
+        const headerRowStr = accounts[0].join(' ');
+        if (headerRowStr.includes('บัญชี') || headerRowStr.includes('ชื่อ')) {
+          startIndex = 1;
+        }
       }
 
+      let fallbackIndex = 0;
+
       for (let i = 0; i < pages.length; i++) {
-        const row = accounts[startIndex + i];
-        if (!row) break;
+        let matchedRow = null;
+        let extractionMethod = "Sequential";
+
+        // Hybrid Attempt: Try extracting text from the page using pdfjs-dist
+        if (pdfjsDoc) {
+          try {
+            // pdfjs-dist page numbers are 1-indexed
+            const page = await pdfjsDoc.getPage(i + 1);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map((item: any) => item.str).join(' ');
+
+            // Find a 10-digit number (allow spaces or hyphens nearby but capture only digits if possible, or just strict 10 digits)
+            // Strict 10-digit number without dashes as confirmed by user
+            const match = pageText.match(/\b\d{10}\b/);
+            if (match && match[0]) {
+              const extractedAccount = match[0];
+              // Search in accounts array (Column index 2 is Bank Account)
+              const found = accounts.find(r => r[2] && String(r[2]).trim() === extractedAccount);
+              if (found) {
+                matchedRow = found;
+                extractionMethod = "OCR-Match";
+              }
+            }
+          } catch (err) {
+            console.warn(`Error extracting text on page ${i + 1}`, err);
+          }
+        }
+
+        // Fallback: If OCR failed to find a valid account, use sequential index
+        if (!matchedRow) {
+          matchedRow = accounts[startIndex + fallbackIndex];
+          fallbackIndex++;
+          extractionMethod = "Sequential";
+        }
         
-        const name = row[0];
-        const bankAccount = String(row[2]).trim();
+        if (!matchedRow) break; // We ran out of accounts in the Google Sheet
+        
+        const name = matchedRow[0];
+        const bankAccount = String(matchedRow[2]).trim();
         if (!bankAccount) continue;
         
         const newPdf = await PDFDocument.create();

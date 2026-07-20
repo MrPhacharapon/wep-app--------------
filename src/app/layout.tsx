@@ -43,7 +43,7 @@ export default function RootLayout({
             errDiv.style.zIndex = '999999';
             errDiv.style.wordBreak = 'break-all';
             errDiv.style.fontSize = '14px';
-            errDiv.innerHTML = '<b>🚨 [System Crash]</b><br/>' + msg + '<br/><small>Line: ' + line + ', Col: ' + col + '</small>';
+            errDiv.innerHTML = '<b>🚨 [System Crash]</b><br/>' + msg + '<br/><small>File: ' + url + '</small><br/><small>Line: ' + line + ', Col: ' + col + '</small>';
             document.body.appendChild(errDiv);
           };
           window.onunhandledrejection = function(e) {

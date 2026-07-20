@@ -303,60 +303,52 @@ export default function Home() {
       </div>
 
       {/* Admin Password Modal */}
-      <AnimatePresence>
-        {showAdminModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+      {showAdminModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div 
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => setShowAdminModal(false)}
+          />
+          <div className="glass-panel p-6 w-full max-w-sm relative z-10 bg-white/90">
+            <button 
               onClick={() => setShowAdminModal(false)}
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="glass-panel p-6 w-full max-w-sm relative z-10 bg-white/90"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
             >
-              <button 
-                onClick={() => setShowAdminModal(false)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              
-              <div className="text-center mb-6 mt-2">
-                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-600">
-                  <Lock className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-800">เข้าสู่ระบบผู้ดูแล</h3>
-                <p className="text-sm text-slate-500 mt-1">กรุณาใส่รหัสผ่านเพื่อจัดการฐานข้อมูล</p>
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="text-center mb-6 mt-2">
+              <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-600">
+                <Lock className="w-6 h-6" />
               </div>
+              <h3 className="text-lg font-bold text-slate-800">เข้าสู่ระบบผู้ดูแล</h3>
+              <p className="text-sm text-slate-500 mt-1">กรุณาใส่รหัสผ่านเพื่อจัดการฐานข้อมูล</p>
+            </div>
 
-              <form onSubmit={handleAdminLogin}>
-                <input
-                  type="password"
-                  placeholder="รหัสผ่าน"
-                  required
-                  className="glass-input w-full bg-white mb-4"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                />
-                
-                {adminError && (
-                  <div className="mb-4 text-sm text-rose-500 flex items-center justify-center gap-1.5 bg-rose-50 p-2 rounded-lg">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>{adminError}</span>
-                  </div>
-                )}
-                
-                <button type="submit" disabled={isCheckingAuth} className="btn-primary w-full flex justify-center items-center gap-2">
-                  {isCheckingAuth ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : 'เข้าสู่ระบบ'}
-                </button>
-              </form>
-            </motion.div>
+            <form onSubmit={handleAdminLogin}>
+              <input
+                type="password"
+                placeholder="รหัสผ่าน"
+                required
+                className="glass-input w-full bg-white mb-4"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+              />
+              
+              {adminError && (
+                <div className="mb-4 text-sm text-rose-500 flex items-center justify-center gap-1.5 bg-rose-50 p-2 rounded-lg">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{adminError}</span>
+                </div>
+              )}
+              
+              <button type="submit" disabled={isCheckingAuth} className="btn-primary w-full flex justify-center items-center gap-2">
+                {isCheckingAuth ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : 'เข้าสู่ระบบ'}
+              </button>
+            </form>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </main>
   );
 }

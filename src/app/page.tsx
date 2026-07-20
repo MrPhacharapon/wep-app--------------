@@ -114,6 +114,21 @@ export default function Home() {
         return itemScore >= min && itemScore <= max;
       });
       
+      // Sort the results:
+      // 1. Year descending (newest first)
+      // 2. Month ascending (Jan -> Dec)
+      filteredData.sort((a, b) => {
+        const yearA = Number(a.year);
+        const yearB = Number(b.year);
+        if (yearA !== yearB) {
+          return yearB - yearA; // Descending Year
+        }
+        // Same year, sort by month index ascending
+        const monthA = ALL_MONTHS.indexOf(a.month);
+        const monthB = ALL_MONTHS.indexOf(b.month);
+        return monthA - monthB; // Ascending Month (Jan -> Dec)
+      });
+      
       setResults(filteredData);
       setEmployeeData(null);
 

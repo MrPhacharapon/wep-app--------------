@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'LINE credentials not configured' }, { status: 500 });
     }
 
-    const messageText = `📢 แจ้งเตือน: สลิปเงินเดือนประจำเดือน ${month} พ.ศ. ${year} ได้อัปโหลดเข้าระบบเรียบร้อยแล้ว\n\nคุณครูสามารถเข้าไปตรวจสอบและดาวน์โหลดสลิปได้ที่เว็บไซต์:\nhttps://slip-lpsec.vercel.app`;
+    const messageText = `📢 แจ้งเตือน: ใบรับรองการจ่ายเงินเดือน ประจำเดือน ${month} พ.ศ. ${year} ได้อัปโหลดเข้าระบบเรียบร้อยแล้ว\n\nคุณครูสามารถเข้าไปตรวจสอบและดาวน์โหลดเอกสารได้ที่เว็บไซต์ระบบค้นหาใบรับรองการจ่ายเงินเดือน`;
 
     const response = await fetch('https://api.line.me/v2/bot/message/push', {
       method: 'POST',

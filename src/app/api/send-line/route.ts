@@ -1,0 +1,45 @@
+import { NextResponse } from 'next/server';
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { month, year } = body;
+
+    if (!month || !year) {
+      return NextResponse.json({ error: 'Missing month or year' }, { status: 400 });
+    }
+
+    const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+    const groupId = process.env.LINE_GROUP_ID;
+
+    if (!channelAccessToken || !groupId) {
+      console.error('Missing LINE credentials in Environment Variables');
+      return NextResponse.json({ error: 'LINE credentials not configured' }, { status: 500 });
+    }
+
+    const messageText = `📢 แจ้งเตือน: สลิปเงินเดือนประจำเดือน ${month} พ.ศ. ${year} ได้อัปโหลดเข้าระบบเรียบร้อยแล้ว\n\nคุณครูสามารถเข้าไปตรวจสอบและดาวน์โหลดสลิปได้ที่เว็บไซต์:\nhttps://slip-lpsec.vercel.app`;
+
+    const response = await fetch('https://api.line.me/v2/bot/message/push', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${channelAccessToken}`
+      },
+      body: JSON.stringify({
+        to: groupId,
+        messages: [{ type: 'text', text: messageText }]
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to send LINE message:', errorText);
+      return NextResponse.json({ error: 'Failed to send LINE message' }, { status: response.status });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Send LINE Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}

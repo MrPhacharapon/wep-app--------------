@@ -34,6 +34,7 @@ export default function AdminPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [notifyLine, setNotifyLine] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
@@ -230,6 +231,18 @@ export default function AdminPage() {
         console.error("History error:", historyError);
       }
 
+      if (notifyLine) {
+        try {
+          await fetch('/api/send-line', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ month: selectedMonth, year: selectedYear })
+          });
+        } catch (e) {
+          console.error("Failed to trigger LINE notification", e);
+        }
+      }
+
       setUploadSuccess(true);
       fetchHistory();
       setFile(null);
@@ -395,6 +408,19 @@ export default function AdminPage() {
                       )}
                     </label>
                   </div>
+                </div>
+
+                <div className="flex items-center gap-3 bg-white/50 p-4 rounded-xl border border-slate-200">
+                  <input
+                    type="checkbox"
+                    id="notify-line"
+                    checked={notifyLine}
+                    onChange={(e) => setNotifyLine(e.target.checked)}
+                    className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                  />
+                  <label htmlFor="notify-line" className="text-sm text-slate-700 cursor-pointer flex-1 font-medium">
+                    ส่งแจ้งเตือนไปยัง LINE กลุ่ม (เมื่ออัปโหลดสำเร็จ)
+                  </label>
                 </div>
 
                 {uploadSuccess && (

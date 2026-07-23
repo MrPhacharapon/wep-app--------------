@@ -243,14 +243,14 @@ export default function Home() {
             ศูนย์การศึกษาพิเศษ ประจำจังหวัดลำปาง
           </h2>
           <p className="text-slate-600 text-lg mt-2">
-            กรุณากรอกเลขบัญชีธนาคารและเลือกช่วงเวลาเพื่อดาวน์โหลด
+            กรุณากรอกเลขบัญชีธนาคารที่รับเงินเดือนและเลือกช่วงเวลาเพื่อดาวน์โหลด
           </p>
         </div>
 
         <div className="glass-panel p-8 mb-8">
           <form onSubmit={handleSearch} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">เลขบัญชีธนาคาร</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">เลขบัญชีธนาคารที่รับเงินเดือน</label>
               <div className="relative">
                 <input
                   type={showBankAccount ? "text" : "password"}

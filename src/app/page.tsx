@@ -174,12 +174,26 @@ export default function Home() {
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], {type: 'application/pdf'});
       
+      const url = URL.createObjectURL(blob);
+      
+      // วิธีที่ 2: พยายามบังคับดาวน์โหลดผ่าน Tag <a>
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
+      link.href = url;
       link.download = `slip_${month}_${year}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      // ตรวจสอบว่าผู้ใช้เปิดผ่าน LINE In-App Browser หรือไม่
+      const isLineApp = /Line/i.test(navigator.userAgent);
+      
+      if (isLineApp) {
+        // วิธีที่ 1 (Fallback): แจ้งเตือนผู้ใช้หากวิธีที่ 2 อาจจะล้มเหลว
+        setTimeout(() => {
+          alert("คำแนะนำสำหรับแอป LINE:\n\nระบบกำลังพยายามดาวน์โหลดไฟล์... แต่หากคุณครูไม่พบไฟล์สลิปที่ดาวน์โหลด (เนื่องจาก LINE มักจะบล็อกไฟล์)\n\nกรุณากดไอคอน 'จุด 3 จุด' หรือสัญลักษณ์แชร์ที่มุมจอ แล้วเลือกเมนู 'เปิดด้วยเบราว์เซอร์อื่น' (Open in browser/Safari/Chrome) ครับ");
+        }, 800); // หน่วงเวลาเล็กน้อยให้หน้าต่างดาวน์โหลดจริงทำงานก่อน (ถ้ามันทำงานได้)
+      }
+      
     } catch (error) {
       alert("ไม่สามารถดาวน์โหลดไฟล์ได้");
     }
